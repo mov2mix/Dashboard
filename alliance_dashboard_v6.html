@@ -452,7 +452,7 @@ td { padding: 11px 16px; font-size: 14px; font-weight: 600; }
     <div class="note"><strong>⚔️ مبارزة التحالف الأسبوعية</strong> — نقاط المبارزة خلال أسبوع كامل، وليست القوة الإجمالية للقاعدة. التحالف في المرتبة <strong>#9</strong> بإجمالي <strong>51,230,850</strong> نقطة.</div>
     <div class="tcard scrollx">
       <div class="thead2"><span>⚔️ ترتيب المبارزة الأسبوعي</span><span class="bdg bdg-g">أعضاء [33nf]</span></div>
-      <table><thead><tr><th>الترتيب</th><th>القائد</th><th>نقاط المبارزة</th><th>النسبة من الأول</th></tr></thead>
+      <table><thead><tr><th>الترتيب</th><th>القائد</th><th>نقاط المبارزة</th><th>النسبة من المتوسط (18M)</th></tr></thead>
       <tbody id="duel-body"></tbody></table>
     </div>
   </div>
@@ -482,7 +482,7 @@ function dateAgo(days){
   d.setDate(d.getDate()-days);
   return d.toLocaleDateString('ar-EG-u-nu-latn',{day:'numeric',month:'long',year:'numeric'});
 }
-const LP=51230850;
+const LP=18000000; // المتوسط المستهدف
 
 function rBadge(r){ return r==='R1'?'rb1':r==='R2'?'rb2':'rb3'; }
 function dayBadge(d){ return d<=14?'day-new':d<=60?'day-mid':'day-old'; }
@@ -629,7 +629,6 @@ function renderRatings(){
 
 // ── DUEL DATA ──
 const duelData=[
-  {rank:9, name:'هلد (القائد)',pts:51230850,leader:true},
   {rank:56,name:'Shehanaaa',pts:11703415},{rank:57,name:'Mody1337',pts:11559606},
   {rank:58,name:'العابره',pts:11066020},{rank:59,name:'ملحوس20',pts:10669706},
   {rank:60,name:'Saraak90',pts:10270686},{rank:61,name:'ABU YACUB',pts:9460531},
@@ -651,16 +650,18 @@ function renderDuel(){
   const tb=document.getElementById('duel-body');
   duelData.forEach(m=>{
     const pct=Math.round(m.pts/LP*100);
+    const barW=Math.min(pct,100);
     const rc=m.rank<=10?'rnum-gold':m.rank<=30?'rnum-cyan':'';
-    const vc=m.pts>20e6?'val-green':m.pts>5e6?'':m.pts>2e6?'val-gold':'val-red';
+    const vc=m.pts>=LP?'val-green':m.pts>=LP*0.5?'val-orange':'val-red';
+    const pctColor=pct>=100?'val-green':pct>=50?'val-orange':'val-red';
     tb.innerHTML+=`<tr>
       <td><span class="rnum ${rc}">${m.rank}</span></td>
-      <td style="font-weight:${m.leader?800:600};color:${m.leader?'var(--gold)':'var(--text-primary)'};font-size:15px">${m.name}</td>
+      <td style="font-weight:600;color:var(--text-primary);font-size:15px">${m.name}</td>
       <td class="${vc}" style="font-size:15px;font-weight:700">${m.pts.toLocaleString()}</td>
       <td>
         <div class="bar-wrap">
-          <div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div>
-          <span style="font-size:12px;color:var(--text-dim);min-width:38px;font-weight:700">${pct}%</span>
+          <div class="bar-bg"><div class="bar-fill" style="width:${barW}%"></div></div>
+          <span style="font-size:12px;min-width:42px;font-weight:700" class="${pctColor}">${pct}%</span>
         </div>
       </td>
     </tr>`;
@@ -669,7 +670,6 @@ function renderDuel(){
 
 // ── DONATION DATA ──
 const donData=[
-  {rank:28,name:'هلد',pts:40700,leader:true},
   {rank:57,name:'Docone86',pts:29850},{rank:58,name:'xrorox',pts:28950},
   {rank:59,name:'Jojo And Coco',pts:27700},{rank:60,name:'Arix717',pts:25650},
   {rank:61,name:'4DRAGON',pts:25500},{rank:62,name:'Matilda7x',pts:24150},
