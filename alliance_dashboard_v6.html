@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[33nf] Server Masters — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #FFD23F;
+  --gold-soft: #FFF3B0;
+  --red: #FF4444;
+  --red-soft: #FF8A8A;
+  --orange: #FF8C42;
+  --orange-soft: #FFBE99;
+  --green: #2ECC71;
+  --green-soft: #A8F0C6;
+  --cyan: #38D9F5;
+  --yellow: #FFE066;
+  --purple: #C084FC;
+  --bg-deep: #0A0E1A;
+  --bg-main: #0F1628;
+  --bg-card: #162035;
+  --bg-card2: #1C2A45;
+  --bg-card3: #213050;
+  --line: rgba(255,255,255,0.08);
+  --line2: rgba(255,255,255,0.13);
+  --text-primary: #F0F4FF;
+  --text-secondary: #B8C5E0;
+  --text-dim: #7A90B8;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: 'Tajawal', sans-serif;
+  min-height: 100vh;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 40% at 50% 0%, rgba(56,217,245,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 50% at 0% 100%, rgba(255,210,63,0.05) 0%, transparent 50%);
+}
+
+.page { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 24px 16px 60px; }
+
+/* ══ HEADER ══ */
+.header {
+  text-align: center;
+  padding: 36px 0 30px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid var(--line2);
+  position: relative;
+}
+.header::after {
+  content: '';
+  position: absolute; bottom: -1px; left: 50%; transform: translateX(-50%);
+  width: 200px; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+}
+.h-eyebrow {
+  font-size: 11px; letter-spacing: 6px; text-transform: uppercase;
+  color: var(--text-dim); margin-bottom: 10px;
+  font-family: 'Orbitron', monospace;
+}
+.h-name {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(22px, 5vw, 44px);
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  text-shadow: 0 0 40px rgba(255,210,63,0.3);
+}
+.h-tags { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
+.h-tag {
+  padding: 5px 16px; border-radius: 30px; font-size: 13px; font-weight: 700;
+}
+.ht-game { background: rgba(192,132,252,0.15); border: 1px solid rgba(192,132,252,0.35); color: var(--purple); }
+.ht-date { background: rgba(56,217,245,0.12); border: 1px solid rgba(56,217,245,0.3); color: var(--cyan); font-family: 'Orbitron', monospace; font-size: 12px; }
+
+/* ══ KPI ROW ══ */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
+.kpi {
+  background: var(--bg-card);
+  border: 1px solid var(--line2);
+  border-radius: 16px;
+  padding: 20px 16px 18px;
+  text-align: center;
+  position: relative; overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.kpi:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
+.kpi::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--kpi-color, var(--gold));
+}
+.kpi-icon { font-size: 26px; margin-bottom: 8px; }
+.kpi-val {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(20px, 3vw, 30px);
+  font-weight: 900;
+  color: var(--kpi-color, var(--gold));
+  line-height: 1;
+}
+.kpi-lbl { font-size: 13px; color: var(--text-secondary); margin-top: 6px; font-weight: 600; }
+
+/* ══ TABS ══ */
+.tab-row { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+.tab {
+  padding: 10px 20px; border-radius: 10px;
+  border: 1.5px solid var(--line2);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-family: 'Tajawal', sans-serif;
+  font-size: 14px; font-weight: 700;
+  cursor: pointer; transition: 0.2s;
+  white-space: nowrap;
+}
+.tab.active { background: var(--gold); color: #0A0E1A; border-color: var(--gold); }
+.tab:hover:not(.active) { border-color: var(--gold); color: var(--gold); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ══ SECTION HEADER ══ */
+.sec-head {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 20px;
+  border-radius: 14px;
+  margin-bottom: 16px;
+}
+.sec-both   { background: rgba(255,68,68,0.1);  border: 1.5px solid rgba(255,68,68,0.35); }
+.sec-one    { background: rgba(255,140,66,0.1);  border: 1.5px solid rgba(255,140,66,0.35); }
+.sec-improve{ background: rgba(255,224,102,0.08);border: 1.5px solid rgba(255,224,102,0.3); }
+.sec-icon { font-size: 28px; flex-shrink: 0; }
+.sec-info { flex: 1; }
+.sec-title { font-size: 17px; font-weight: 900; }
+.sec-desc  { font-size: 13px; margin-top: 2px; font-weight: 500; }
+.sec-both .sec-title  { color: var(--red-soft); }
+.sec-one .sec-title   { color: var(--orange-soft); }
+.sec-improve .sec-title{ color: var(--yellow); }
+.sec-both .sec-desc   { color: rgba(255,138,138,0.75); }
+.sec-one .sec-desc    { color: rgba(255,190,153,0.75); }
+.sec-improve .sec-desc{ color: rgba(255,224,102,0.6); }
+.sec-count {
+  font-family: 'Orbitron', monospace;
+  font-size: 13px; font-weight: 700;
+  padding: 4px 14px; border-radius: 20px;
+  white-space: nowrap;
+}
+.sec-both .sec-count   { background: rgba(255,68,68,0.2);  color: var(--red-soft); }
+.sec-one .sec-count    { background: rgba(255,140,66,0.2);  color: var(--orange-soft); }
+.sec-improve .sec-count{ background: rgba(255,224,102,0.15);color: var(--yellow); }
+
+.cat-section { margin-bottom: 28px; }
+
+/* ══ MEMBER CARDS ══ */
+.cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
+
+.mcard {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 0;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+.mcard:hover { transform: translateY(-3px); box-shadow: 0 16px 50px rgba(0,0,0,0.5); }
+
+.mcard-bar { height: 4px; width: 100%; }
+.bar-red    { background: linear-gradient(90deg, var(--red), #FF7676); }
+.bar-orange { background: linear-gradient(90deg, var(--orange), #FFBE99); }
+.bar-yellow { background: linear-gradient(90deg, #FFE066, #FFD23F); }
+
+.mcard-body { padding: 18px 18px 16px; }
+
+.mcard-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.mcard-name { font-size: 17px; font-weight: 900; color: var(--text-primary); line-height: 1.2; }
+.mcard-badges { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-start; margin-top: 5px; }
+
+.rbadge {
+  font-size: 11px; font-weight: 800; font-family: 'Orbitron', monospace;
+  padding: 2px 10px; border-radius: 6px;
+}
+.rb1 { background: rgba(56,217,245,0.15); color: var(--cyan); border: 1px solid rgba(56,217,245,0.3); }
+.rb2 { background: rgba(255,210,63,0.15); color: var(--gold); border: 1px solid rgba(255,210,63,0.3); }
+.rb3 { background: rgba(46,204,113,0.15); color: var(--green); border: 1px solid rgba(46,204,113,0.3); }
+
+.daybadge {
+  font-size: 11px; font-weight: 700;
+  padding: 2px 10px; border-radius: 6px;
+  font-family: 'Orbitron', monospace;
+}
+.day-new { background: rgba(46,204,113,0.15); color: var(--green-soft); border: 1px solid rgba(46,204,113,0.25); }
+.day-mid { background: rgba(255,210,63,0.12); color: var(--gold);       border: 1px solid rgba(255,210,63,0.25); }
+.day-old { background: rgba(255,68,68,0.12);  color: var(--red-soft);   border: 1px solid rgba(255,68,68,0.25); }
+
+/* STATS */
+.mcard-stats { display: flex; flex-direction: column; gap: 0; }
+.stat-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+}
+.stat-row:last-child { border-bottom: none; }
+.stat-lbl { color: var(--text-dim); font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.stat-lbl-icon { font-size: 15px; }
+.stat-val { font-weight: 800; font-size: 14px; text-align: left; }
+.val-green  { color: var(--green-soft); }
+.val-red    { color: var(--red-soft); }
+.val-orange { color: var(--orange-soft); }
+.val-gold   { color: var(--gold); }
+.val-dim    { color: var(--text-dim); font-size: 13px; }
+
+/* STATUS PILLS */
+.mcard-pills { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 13px; }
+.spill {
+  font-size: 12px; font-weight: 800;
+  padding: 4px 12px; border-radius: 8px;
+}
+.sp-red-bad    { background: rgba(255,68,68,0.2);  color: var(--red-soft);    border: 1px solid rgba(255,68,68,0.4); }
+.sp-orange-bad { background: rgba(255,140,66,0.2); color: var(--orange-soft); border: 1px solid rgba(255,140,66,0.4); }
+.sp-green-ok   { background: rgba(46,204,113,0.15);color: var(--green-soft);  border: 1px solid rgba(46,204,113,0.3); }
+
+/* AWARD BOX */
+.award-box {
+  margin-top: 12px;
+  background: rgba(255,210,63,0.07);
+  border: 1px solid rgba(255,210,63,0.2);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 13px; font-weight: 700;
+  color: var(--gold-soft);
+  line-height: 1.6;
+}
+.award-box-title { font-size: 11px; color: var(--gold); letter-spacing: 1px; margin-bottom: 3px; text-transform: uppercase; }
+
+/* ══ INFO NOTE ══ */
+.note {
+  background: var(--bg-card2);
+  border: 1px solid var(--line2);
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 14px; font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  line-height: 1.7;
+}
+.note strong { color: var(--gold); }
+.note .n-rule { display: flex; align-items: flex-start; gap: 8px; margin-top: 4px; }
+.note .n-rule::before { content: '▸'; color: var(--cyan); flex-shrink: 0; }
+
+/* ══ DUEL / DON TABLE ══ */
+.tcard {
+  background: var(--bg-card);
+  border: 1px solid var(--line2);
+  border-radius: 16px; overflow: hidden; margin-bottom: 18px;
+}
+.thead2 {
+  padding: 14px 20px;
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid var(--line2);
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 15px; font-weight: 800; color: var(--gold);
+}
+.scrollx { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  padding: 11px 16px;
+  background: rgba(255,255,255,0.03);
+  font-size: 13px; font-weight: 800; letter-spacing: 0.5px;
+  color: var(--text-dim); text-align: right;
+  border-bottom: 1px solid var(--line2); white-space: nowrap;
+}
+tbody tr { border-bottom: 1px solid var(--line); transition: background 0.15s; }
+tbody tr:hover { background: rgba(255,210,63,0.04); }
+tbody tr:last-child { border-bottom: none; }
+td { padding: 11px 16px; font-size: 14px; font-weight: 600; }
+
+.rnum {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; border-radius: 50%;
+  font-family: 'Orbitron', monospace; font-size: 11px; font-weight: 900;
+  background: var(--bg-card2); color: var(--text-dim);
+}
+.rnum-gold { background: rgba(255,210,63,0.2); color: var(--gold); }
+.rnum-cyan { background: rgba(56,217,245,0.15); color: var(--cyan); }
+
+.bar-wrap { display: flex; align-items: center; gap: 8px; }
+.bar-bg { flex: 1; height: 5px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; min-width: 60px; }
+.bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--cyan), var(--gold)); }
+
+/* ══ AWARDS ══ */
+.awards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+.acard {
+  background: var(--bg-card);
+  border: 1px solid rgba(255,210,63,0.2);
+  border-radius: 16px; padding: 18px 18px 16px;
+  position: relative; overflow: hidden;
+  transition: transform 0.2s;
+}
+.acard:hover { transform: translateY(-3px); }
+.acard::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--gold), var(--orange)); }
+.acard-icon { font-size: 28px; margin-bottom: 8px; }
+.acard-cat { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); font-weight: 800; margin-bottom: 6px; }
+.acard-winner { font-size: 18px; font-weight: 900; color: var(--gold-soft); margin-bottom: 4px; }
+.acard-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; font-weight: 600; }
+.acard-runners { border-top: 1px solid var(--line); padding-top: 10px; display: flex; flex-direction: column; gap: 5px; }
+.acard-runner { font-size: 13px; font-weight: 700; }
+.acard-runner .pos { color: var(--text-dim); }
+.acard-runner .nm  { color: var(--text-primary); }
+.acard-runner .vl  { color: var(--text-secondary); font-size: 12px; }
+
+/* BADGE helpers */
+.bdg { border-radius: 20px; padding: 3px 12px; font-size: 12px; font-weight: 800; font-family: 'Orbitron', monospace; }
+.bdg-g { background: rgba(255,210,63,0.15);  color: var(--gold); }
+.bdg-r { background: rgba(255,68,68,0.15);   color: var(--red-soft); }
+.bdg-o { background: rgba(255,140,66,0.15);  color: var(--orange-soft); }
+.bdg-y { background: rgba(255,224,102,0.12); color: var(--yellow); }
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 99px; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);} }
+.kpi { animation: fadeUp 0.5s ease both; }
+.kpi:nth-child(1){animation-delay:.05s} .kpi:nth-child(2){animation-delay:.10s}
+.kpi:nth-child(3){animation-delay:.15s} .kpi:nth-child(4){animation-delay:.20s}
+.kpi:nth-child(5){animation-delay:.25s} .kpi:nth-child(6){animation-delay:.30s}
+
+@media(max-width:640px){
+  .kpi-row{grid-template-columns:repeat(2,1fr);}
+  .cards-grid{grid-template-columns:1fr;}
+  td,th{padding:9px 10px;font-size:13px;}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="h-eyebrow">Alliance Intelligence Dashboard</div>
+    <div class="h-name">[33nf] SERVER MASTERS</div>
+    <div class="h-tags">
+      <span class="h-tag ht-game">🎮 Last War · Survival Game</span>
+      <span class="h-tag ht-date">📅 10 مايو 2026</span>
+    </div>
+  </div>
+
+  <!-- KPI -->
+  <div class="kpi-row">
+
+    <div class="kpi" style="--kpi-color:var(--cyan)">
+      <div class="kpi-icon">🌟</div><div class="kpi-val">Event 23</div>
+      <div class="kpi-lbl">حفل الجوائز الأسبوعي</div>
+    </div>
+    <div class="kpi" style="--kpi-color:var(--green)">
+      <div class="kpi-icon">👥</div><div class="kpi-val">84</div>
+      <div class="kpi-lbl">إجمالي الأعضاء</div>
+    </div>
+    <div class="kpi" style="--kpi-color:var(--red-soft)">
+      <div class="kpi-icon">🔴</div><div class="kpi-val">4</div>
+      <div class="kpi-lbl">مقصرون في المبارزة والتبرع</div>
+    </div>
+    <div class="kpi" style="--kpi-color:var(--orange-soft)">
+      <div class="kpi-icon">🟠</div><div class="kpi-val">5</div>
+      <div class="kpi-lbl">مقصرون في جانب واحد</div>
+    </div>
+    <div class="kpi" style="--kpi-color:var(--yellow)">
+      <div class="kpi-icon">🟡</div><div class="kpi-val">4</div>
+      <div class="kpi-lbl">يحتاجون تحسين</div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tab-row">
+    <button class="tab active" onclick="showTab('ratings',this)">⚠️ التقييمات</button>
+    <button class="tab" onclick="showTab('duel',this)">⚔️ مبارزة التحالف</button>
+    <button class="tab" onclick="showTab('donation',this)">💰 التبرعات</button>
+    <button class="tab" onclick="showTab('awards',this)">🌟 حفل الجوائز</button>
+  </div>
+
+  <!-- ══ TAB: RATINGS ══ -->
+  <div class="tab-panel active" id="tab-ratings">
+    <div class="note">
+      <strong>قاعدة التقييم المعتمدة:</strong>
+      <div class="n-rule">النقاط الغائبة عن قائمة المبارزة أو التبرع = <strong>مشاركة جيدة</strong> (لم تصل للقائمة المرئية فقط).</div>
+      <div class="n-rule">التقصير الحقيقي = الرقم الظاهر فعلاً والمنخفض بشكل واضح.</div>
+      <div class="n-rule">مبارزة أكثر من <strong>6 مليون</strong> = جيدة ✅</div>
+    </div>
+
+    <!-- 🔴 BOTH -->
+    <div class="cat-section">
+      <div class="sec-head sec-both">
+        <div class="sec-icon">🔴</div>
+        <div class="sec-info">
+          <div class="sec-title">مقصر في المبارزة والتبرع معاً</div>
+          <div class="sec-desc">نقاط المبارزة ضعيفة + التبرع منخفض أو صفر</div>
+        </div>
+        <span class="sec-count">4 أعضاء</span>
+      </div>
+      <div class="cards-grid" id="grid-both"></div>
+    </div>
+
+    <!-- 🟠 ONE -->
+    <div class="cat-section">
+      <div class="sec-head sec-one">
+        <div class="sec-icon">🟠</div>
+        <div class="sec-info">
+          <div class="sec-title">مقصر في جانب واحد فقط</div>
+          <div class="sec-desc">الجانب الآخر جيد ✅</div>
+        </div>
+        <span class="sec-count">5 أعضاء</span>
+      </div>
+      <div class="cards-grid" id="grid-one"></div>
+    </div>
+
+    <!-- 🟡 IMPROVE -->
+    <div class="cat-section">
+      <div class="sec-head sec-improve">
+        <div class="sec-icon">🟡</div>
+        <div class="sec-info">
+          <div class="sec-title">يحتاج تحسين</div>
+          <div class="sec-desc">مبارزة أكثر من 6M + تبرع جيد — أداء مقبول لكن يمكن تطويره</div>
+        </div>
+        <span class="sec-count">4 أعضاء</span>
+      </div>
+      <div class="cards-grid" id="grid-improve"></div>
+    </div>
+  </div>
+
+  <!-- ══ TAB: DUEL ══ -->
+  <div class="tab-panel" id="tab-duel">
+    <div class="note"><strong>⚔️ مبارزة التحالف الأسبوعية</strong> — نقاط المبارزة خلال أسبوع كامل، وليست القوة الإجمالية للقاعدة. التحالف في المرتبة <strong>#9</strong> بإجمالي <strong>51,230,850</strong> نقطة.</div>
+    <div class="tcard scrollx">
+      <div class="thead2"><span>⚔️ ترتيب المبارزة الأسبوعي</span><span class="bdg bdg-g">أعضاء [33nf]</span></div>
+      <table><thead><tr><th>الترتيب</th><th>القائد</th><th>نقاط المبارزة</th><th>النسبة من الأول</th></tr></thead>
+      <tbody id="duel-body"></tbody></table>
+    </div>
+  </div>
+
+  <!-- ══ TAB: DONATION ══ -->
+  <div class="tab-panel" id="tab-donation">
+    <div class="note"><strong>💰 التبرعات الأسبوعية</strong> — الصفر أو الرقم المنخفض جداً مخالفة واضحة لقواعد التحالف.</div>
+    <div class="tcard scrollx">
+      <div class="thead2"><span>💰 ترتيب التبرعات الأسبوعية</span><span class="bdg bdg-g">من بيانات الصور</span></div>
+      <table><thead><tr><th>الترتيب</th><th>القائد</th><th>نقاط التبرع</th><th>التقييم</th></tr></thead>
+      <tbody id="don-body"></tbody></table>
+    </div>
+  </div>
+
+  <!-- ══ TAB: AWARDS ══ -->
+  <div class="tab-panel" id="tab-awards">
+    <div class="note"><strong>🌟 Alliance Star Ceremony — Event 23</strong> — كل من ظهر اسمه (مرتبة 1، 2، أو 3) يُعتبر متفاعلاً متميزاً هذا الأسبوع.</div>
+    <div class="awards-grid" id="awards-grid"></div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+// ── HELPERS ──
+function dateAgo(days){
+  const d=new Date('2026-05-10');
+  d.setDate(d.getDate()-days);
+  return d.toLocaleDateString('ar-EG-u-nu-latn',{day:'numeric',month:'long',year:'numeric'});
+}
+const LP=51230850;
+
+function rBadge(r){ return r==='R1'?'rb1':r==='R2'?'rb2':'rb3'; }
+function dayBadge(d){ return d<=14?'day-new':d<=60?'day-mid':'day-old'; }
+function dayLabel(d){ return d<=14?'جديد':d<=60?'متوسط':'قديم'; }
+
+// ── AWARDS ──
+const awards=[
+  {icon:'🏆',cat:'Alliance Champion',   winner:'شمس الدين',   desc:'#1 في مبارزة التحالف',              r2:'Ali44a','2v':'#2',           r3:'الكرك','3v':'#3'},
+  {icon:'⭐',cat:'MVP',                  winner:'محمود زايد',  desc:'11 نقطة أداء',                      r2:'alotzzz','2v':'8 نقاط',      r3:'Matilda7x','3v':'6 نقاط'},
+  {icon:'🌪️',cat:'Star of Desert Storm', winner:'محمود زايد',  desc:'1,285,747 نقطة Desert Storm',       r2:'الكرك','2v':'1,258,831',     r3:'Ali44a','3v':'1,005,010'},
+  {icon:'💪',cat:'Alliance Exercise MVP',winner:'Matilda7x',   desc:'17,023,932,749 ضرر في التمرين',     r2:'satoruigojo','2v':'3.88B',   r3:'Aziz a33','3v':'3.59B'},
+  {icon:'💚',cat:'Divine Healer',        winner:'Matilda7x',   desc:'40,344 وحدة شُفيت',                r2:'Titaniumste','2v':'32,052',  r3:'محمود زايد','3v':'25,259'},
+  {icon:'💉',cat:'Needle Master',        winner:'alotzzz',     desc:'1,572 فيروس أُزيل',                r2:'محمود زايد','2v':'1,138',    r3:'Fatima91','3v':'975'},
+  {icon:'☠️',cat:'Venom',               winner:'Hadi DE',     desc:'1,224 فيروس أُطلق',                r2:'هلد','2v':'472',             r3:'yunis 5050','3v':'397'},
+  {icon:'⚔️',cat:'Doom Elite Slayer',   winner:'Hadi DE',     desc:'95 مرة تصفية Doom Elite',           r2:'Noor king','2v':'53 مرة',   r3:'satoruigojo','3v':'51 مرة'},
+  {icon:'💥',cat:'Great Destroyer',     winner:'Docone86',    desc:'164,803 ضرر متراكم',               r2:'محمود زايد','2v':'110,890',  r3:'xrorox','3v':'94,281'},
+  {icon:'🎯',cat:'S1 Big Shot',         winner:'محمود زايد',  desc:'10 مرات قتل Doom Elite في S1',      r2:'alotzzz','2v':'10 مرات',    r3:'—','3v':''},
+  {icon:'✨',cat:'Shining Star',        winner:'Iskandar j',  desc:'تبرع زاد +36,000 عن الأسبوع',      r2:'Mohamed 33','2v':'32,300',   r3:'Uniang Fikri','3v':'25,450'},
+  {icon:'👑',cat:'Best Manager',        winner:'Fatima91',    desc:'530 نقطة إدارة التحالف',           r2:'Taraf 115','2v':'400',       r3:'Aziz a33','3v':'400'},
+  {icon:'🏋️',cat:'Devil Trainer',      winner:'alotzzz',     desc:'25,607 وحدة تدريب',                r2:'جعفرAhmd','2v':'23,938',    r3:'Fatima91','3v':'21,576'},
+  {icon:'🌾',cat:'Gather Fanatic',      winner:'Dems93',      desc:'26,666,800 موارد جُمعت',           r2:'ersin7','2v':'25,299,043',   r3:'hadhifa al lamy93','3v':'23,158,440'},
+];
+
+// Build award lookup
+const aLookup={};
+awards.forEach(a=>{
+  const add=(name,pos,cat,icon)=>{
+    if(!name||name==='—') return;
+    const k=name.trim().toLowerCase();
+    if(!aLookup[k]) aLookup[k]=[];
+    aLookup[k].push({icon,cat,pos});
+  };
+  add(a.winner,1,a.cat,a.icon);
+  add(a.r2,2,a.cat,a.icon);
+  add(a.r3,3,a.cat,a.icon);
+});
+function getAwards(name){ return aLookup[name.trim().toLowerCase()]||[]; }
+
+// ── MEMBER DATA ──
+// duelPts: null=good(not visible), number=actual shown
+// donation: null=good(not visible), number=actual shown
+const members=[
+  // 🔴 BOTH
+  {name:'BoSLOOH',          rank:'R3',days:58,  power:'45.1M',lv:'Lv.26',duel:2961367,  don:0,     cat:'both'},
+  {name:'القائد498de1955',  rank:'R2',days:119, power:'34.3M',lv:'Lv.23',duel:1050988,  don:10150, cat:'both'},
+  {name:'معاذMoaz',         rank:'R1',days:44,  power:'24.5M',lv:'Lv.27',duel:911007,   don:7650,  cat:'both'},
+  {name:'vndii',            rank:'R1',days:7,   power:'25.4M',lv:'Lv.21',duel:898514,   don:2900,  cat:'both'},
+  // 🟠 ONE — تبرع فقط
+  {name:'Noor king',        rank:'R2',days:138, power:'44.4M',lv:'Lv.26',duel:null,      don:0,     cat:'don'},
+  {name:'MQ988',            rank:'R1',days:89,  power:'46.6M',lv:'Lv.27',duel:null,      don:3950,  cat:'don'},
+  {name:'Mustafa LEVENT',   rank:'R1',days:7,   power:'22.8M',lv:'Lv.25',duel:null,      don:8300,  cat:'don'},
+  // 🟠 ONE — مبارزة فقط
+  {name:'Amir tantani',     rank:'R2',days:107, power:'43.6M',lv:'Lv.28',duel:4532833,  don:null,  cat:'duel'},
+  // 🟡 IMPROVE
+  {name:'محمد سمير199',    rank:'R1',days:27,  power:'31.6M',lv:'Lv.25',duel:7386181,  don:null,  cat:'improve'},
+  {name:'Dorie Rie',        rank:'R1',days:13,  power:'41.4M',lv:'Lv.20',duel:6562179,  don:null,  cat:'improve'},
+  {name:'Abdull866',        rank:'R1',days:26,  power:'38.4M',lv:'Lv.26',duel:6326531,  don:null,  cat:'improve'},
+  {name:'Edelweiss Hadiyan',rank:'R1',days:13,  power:'27.9M',lv:'Lv.25',duel:7322652,  don:null,  cat:'improve'},
+];
+
+function duelDisp(pts){
+  if(pts===null) return {txt:'جيدة ✅',cls:'val-green'};
+  if(pts>=6e6)   return {txt:pts.toLocaleString(),cls:'val-green'};
+  if(pts>=3e6)   return {txt:pts.toLocaleString(),cls:'val-orange'};
+  return {txt:pts.toLocaleString(),cls:'val-red'};
+}
+function donDisp(d){
+  if(d===null) return {txt:'جيد ✅',cls:'val-green'};
+  if(d===0)    return {txt:'⛔ صفر',cls:'val-red'};
+  if(d<5000)   return {txt:d.toLocaleString()+' — منخفض جداً',cls:'val-red'};
+  if(d<12000)  return {txt:d.toLocaleString()+' — منخفض',cls:'val-orange'};
+  return {txt:d.toLocaleString(),cls:'val-green'};
+}
+
+function buildCard(m){
+  const aw=getAwards(m.name);
+  const dd=duelDisp(m.duel);
+  const dnd=donDisp(m.don);
+  const barCls=m.cat==='both'?'bar-red':m.cat==='improve'?'bar-yellow':'bar-orange';
+
+  // Status pills
+  let pills='';
+  if(m.cat==='both'){
+    pills=`<span class="spill sp-red-bad">⚔️ مبارزة ضعيفة</span><span class="spill sp-red-bad">💰 تبرع ضعيف</span>`;
+  } else if(m.cat==='duel'){
+    pills=`<span class="spill sp-orange-bad">⚔️ مبارزة ضعيفة</span><span class="spill sp-green-ok">💰 تبرع جيد</span>`;
+  } else if(m.cat==='don'){
+    pills=`<span class="spill sp-green-ok">⚔️ مبارزة جيدة</span><span class="spill sp-orange-bad">💰 تبرع ضعيف</span>`;
+  } else {
+    pills=`<span class="spill sp-green-ok">⚔️ مبارزة جيدة</span><span class="spill sp-green-ok">💰 تبرع جيد</span>`;
+  }
+
+  const awardsBlock = aw.length>0 ? `
+    <div class="award-box">
+      <div class="award-box-title">🌟 ظهر في حفل الجوائز</div>
+      ${aw.map(a=>`${a.icon} ${a.pos===1?'🥇':a.pos===2?'🥈':'🥉'} ${a.cat}`).join('<br>')}
+    </div>` : '';
+
+  return `
+    <div class="mcard">
+      <div class="mcard-bar ${barCls}"></div>
+      <div class="mcard-body">
+        <div class="mcard-name">${m.name}</div>
+        <div class="mcard-badges">
+          <span class="rbadge ${rBadge(m.rank)}">${m.rank}</span>
+          <span class="daybadge ${dayBadge(m.days)}">⏱ ${m.days} يوم</span>
+        </div>
+        <div class="mcard-stats" style="margin-top:12px">
+          <div class="stat-row">
+            <span class="stat-lbl"><span class="stat-lbl-icon">📅</span> تاريخ الانضمام</span>
+            <span class="stat-val val-dim">${dateAgo(m.days)}</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-lbl"><span class="stat-lbl-icon">🏰</span> قوة القاعدة</span>
+            <span class="stat-val val-dim">${m.power}</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-lbl"><span class="stat-lbl-icon">📶</span> المستوى</span>
+            <span class="stat-val val-dim">${m.lv}</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-lbl"><span class="stat-lbl-icon">⚔️</span> نقاط المبارزة</span>
+            <span class="stat-val ${dd.cls}">${dd.txt}</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-lbl"><span class="stat-lbl-icon">💰</span> التبرع الأسبوعي</span>
+            <span class="stat-val ${dnd.cls}">${dnd.txt}</span>
+          </div>
+        </div>
+        <div class="mcard-pills">${pills}</div>
+        ${awardsBlock}
+      </div>
+    </div>`;
+}
+
+function renderRatings(){
+  const both=members.filter(m=>m.cat==='both');
+  const one=members.filter(m=>m.cat==='duel'||m.cat==='don');
+  const imp=members.filter(m=>m.cat==='improve');
+  document.getElementById('grid-both').innerHTML=both.map(buildCard).join('');
+  document.getElementById('grid-one').innerHTML=one.map(buildCard).join('');
+  document.getElementById('grid-improve').innerHTML=imp.map(buildCard).join('');
+}
+
+// ── DUEL DATA ──
+const duelData=[
+  {rank:9, name:'هلد (القائد)',pts:51230850,leader:true},
+  {rank:56,name:'Shehanaaa',pts:11703415},{rank:57,name:'Mody1337',pts:11559606},
+  {rank:58,name:'العابره',pts:11066020},{rank:59,name:'ملحوس20',pts:10669706},
+  {rank:60,name:'Saraak90',pts:10270686},{rank:61,name:'ABU YACUB',pts:9460531},
+  {rank:62,name:'Freedom 4 ever',pts:9078267},{rank:63,name:'Docone86',pts:8587902},
+  {rank:64,name:'بوزكورت',pts:8537939},{rank:65,name:'بن يصبا',pts:8402917},
+  {rank:66,name:'DRThunder',pts:8125079},{rank:67,name:'Jojo And Coco',pts:7586197},
+  {rank:68,name:'محمد سمير199',pts:7386181},{rank:69,name:'Edelweiss Hadiyan',pts:7322652},
+  {rank:70,name:'fadi alwasoof',pts:7108581},{rank:71,name:'Dorie Rie',pts:6562179},
+  {rank:72,name:'Abdull866',pts:6326531},{rank:73,name:'Philopaz',pts:5698995},
+  {rank:74,name:'redwines',pts:5249920},{rank:75,name:'Malllaak',pts:5184825},
+  {rank:76,name:'Iskandar j',pts:5046486},{rank:77,name:'Amir tantani',pts:4532833},
+  {rank:78,name:'Saqif Alfaro',pts:4151710},{rank:79,name:'So chan',pts:3819684},
+  {rank:80,name:'Mqatar',pts:3583969},{rank:81,name:'BoSLOOH',pts:2961367},
+  {rank:82,name:'القائد498de1955',pts:1050988},{rank:83,name:'معاذMoaz',pts:911007},
+  {rank:84,name:'vndii',pts:898514},
+];
+
+function renderDuel(){
+  const tb=document.getElementById('duel-body');
+  duelData.forEach(m=>{
+    const pct=Math.round(m.pts/LP*100);
+    const rc=m.rank<=10?'rnum-gold':m.rank<=30?'rnum-cyan':'';
+    const vc=m.pts>20e6?'val-green':m.pts>5e6?'':m.pts>2e6?'val-gold':'val-red';
+    tb.innerHTML+=`<tr>
+      <td><span class="rnum ${rc}">${m.rank}</span></td>
+      <td style="font-weight:${m.leader?800:600};color:${m.leader?'var(--gold)':'var(--text-primary)'};font-size:15px">${m.name}</td>
+      <td class="${vc}" style="font-size:15px;font-weight:700">${m.pts.toLocaleString()}</td>
+      <td>
+        <div class="bar-wrap">
+          <div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div>
+          <span style="font-size:12px;color:var(--text-dim);min-width:38px;font-weight:700">${pct}%</span>
+        </div>
+      </td>
+    </tr>`;
+  });
+}
+
+// ── DONATION DATA ──
+const donData=[
+  {rank:28,name:'هلد',pts:40700,leader:true},
+  {rank:57,name:'Docone86',pts:29850},{rank:58,name:'xrorox',pts:28950},
+  {rank:59,name:'Jojo And Coco',pts:27700},{rank:60,name:'Arix717',pts:25650},
+  {rank:61,name:'4DRAGON',pts:25500},{rank:62,name:'Matilda7x',pts:24150},
+  {rank:63,name:'بن يصبا',pts:23800},{rank:64,name:'Hamad819',pts:23700},
+  {rank:65,name:'Mashal11111',pts:23600},{rank:66,name:'Jamanga86',pts:21650},
+  {rank:67,name:'ABU YACUB',pts:21400},{rank:68,name:'M07AMD',pts:20950},
+  {rank:69,name:'fadi alwasoof',pts:20950},{rank:70,name:'Saqif Alfaro',pts:19050},
+  {rank:71,name:'Malllaak',pts:18450},{rank:72,name:'محمودmaamm',pts:16600},
+  {rank:73,name:'redwines',pts:15950},{rank:74,name:'Little Cj',pts:15050},
+  {rank:75,name:'So chan',pts:14800},{rank:76,name:'القائد498de1955',pts:10150},
+  {rank:77,name:'Philopaz',pts:8350},{rank:78,name:'Mustafa LEVENT',pts:8300},
+  {rank:79,name:'معاذMoaz',pts:7650},{rank:80,name:'MQ988',pts:3950},
+  {rank:81,name:'vndii',pts:2900},{rank:82,name:'العابره',pts:900},
+  {rank:83,name:'BoSLOOH',pts:0},{rank:84,name:'Noor king',pts:0},
+];
+
+function renderDon(){
+  const tb=document.getElementById('don-body');
+  donData.forEach(m=>{
+    const[lbl,cls]=m.pts===0?['⛔ صفر','val-red']:
+      m.pts<5000?['🔴 منخفض جداً','val-red']:
+      m.pts<10000?['🟠 منخفض','val-orange']:
+      m.pts<20000?['🟡 متوسط','val-gold']:['🟢 جيد','val-green'];
+    const rc=m.rank<=30?'rnum-gold':m.rank<=60?'rnum-cyan':'';
+    tb.innerHTML+=`<tr>
+      <td><span class="rnum ${rc}">${m.rank}</span></td>
+      <td style="font-weight:${m.leader?800:600};font-size:15px;color:${m.leader?'var(--gold)':'var(--text-primary)'}">${m.name}</td>
+      <td class="${cls}" style="font-size:15px;font-weight:800">${m.pts.toLocaleString()}</td>
+      <td style="font-size:14px;font-weight:700" class="${cls}">${lbl}</td>
+    </tr>`;
+  });
+}
+
+function renderAwards(){
+  const g=document.getElementById('awards-grid');
+  awards.forEach(a=>{
+    g.innerHTML+=`
+      <div class="acard">
+        <div class="acard-icon">${a.icon}</div>
+        <div class="acard-cat">${a.cat}</div>
+        <div class="acard-winner">🥇 ${a.winner}</div>
+        <div class="acard-desc">${a.desc}</div>
+        <div class="acard-runners">
+          ${a.r2&&a.r2!=='—'?`<div class="acard-runner"><span class="pos">🥈 </span><span class="nm">${a.r2}</span> <span class="vl">— ${a['2v']}</span></div>`:''}
+          ${a.r3&&a.r3!=='—'?`<div class="acard-runner"><span class="pos">🥉 </span><span class="nm">${a.r3}</span> <span class="vl">— ${a['3v']}</span></div>`:''}
+        </div>
+      </div>`;
+  });
+}
+
+function showTab(id,el){
+  document.querySelectorAll('.tab-panel').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  el.classList.add('active');
+}
+
+renderRatings(); renderDuel(); renderDon(); renderAwards();
+</script>
+</body>
+</html>
